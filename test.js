@@ -112,7 +112,7 @@ function inputValue() {
     vote_design += `<p class="top_tit"><span class="tit">${title}</span><button type="button" class="edit">수정</button></p>`;
     vote_design += `<ul class="vote_val_list">`;
     $('.vote_list li input').each(function() {
-        vote_design += `<li><button type="button">${$(this).val()}</button></li>`
+        vote_design += `<li><button type="button" class="vote_option">${$(this).val()}</button></li>`
     })
     vote_design += `</ul>`;
     vote_design += `</div>`;
@@ -153,3 +153,59 @@ $(document).on('click', '#editVote', function() {
     }
     $('.vote_contents_create #editVote').attr('id', 'createVote')
 })
+
+
+/* $(document).on('click', '.vote_option', function() {
+    let buttons = $('.vote_val_list button');
+    let buttonCount = buttons.length;
+    let maxRandom = 100;
+    let randomValues = [];
+
+    for (let i = 0; i < buttonCount; i++) {
+        randomValues.push(0);
+    }
+
+    let remaining = maxRandom;
+    for (let i = 0; i < buttonCount - 1; i++) {
+        let value = Math.floor(Math.random() * remaining);
+        randomValues[i] = value;
+        remaining -= value;
+    }
+    randomValues[buttonCount - 1] = remaining;
+
+    buttons.each(function(idx) {
+        $(this).html(`${$(this).text()}<span class="persent"> (${randomValues[idx]}%)</span>`);
+    });
+}); */
+
+
+/* $(document).ready(function() {
+    $(document).on('click', '.vote_option', function() {
+        let buttons = $('.vote_val_list button');
+        let buttonCount = buttons.length;
+        let maxRandom = 100;
+        let randomValues = [];
+        
+        $('.vote_result_area .edit').show();
+
+        if ($('.vote_val_list .persent').length) {
+            $('.vote_val_list .persent').remove();
+        } else {
+            for (let i = 0; i < buttonCount; i++) {
+                randomValues.push(0);
+            }
+
+            let remaining = maxRandom;
+            for (let i = 0; i < buttonCount - 1; i++) {
+                let value = Math.floor(Math.random() * remaining);
+                randomValues[i] = value;
+                remaining -= value;
+            }
+            randomValues[buttonCount - 1] = remaining;
+
+            buttons.each(function(idx) {
+                $(this).html(`${$(this).text()}<span class="persent"> (${randomValues[idx]}%)</span>`);
+            });
+        }
+    });
+}); */
