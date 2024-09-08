@@ -23,6 +23,7 @@ let vote_modal = `
     </div>
 `
 
+// 투표버튼 클릭
 $(document).on('click', '.vote_btn', function() {
     // $('.vote_contents_create #editVote').attr('id', 'createVote')
     // $('.vote_contents_create #createVote').text('투표 만들기')
@@ -33,17 +34,6 @@ $(document).on('click', '.vote_btn', function() {
     }
     update();
 })
-
-// 투표버튼 클릭
-/* $('.vote_btn').on('click', function() {
-    $('.vote_contents_create #createVote').text('투표 만들기')
-    if ($('.vote_contents_area_bg').length == 0) {
-        $('.vote_btn').after(vote_modal);
-    } else {
-        $('.vote_contents_area_bg').show();
-    }
-    update();
-}); */
 
 // 투표모달창 닫기경우
 $(document).on('click', '.close_vote_contents', function() {
@@ -157,55 +147,143 @@ $(document).on('click', '#editVote', function() {
 
 /* $(document).on('click', '.vote_option', function() {
     let buttons = $('.vote_val_list button');
-    let buttonCount = buttons.length;
-    let maxRandom = 100;
-    let randomValues = [];
+    let button_cnt = buttons.length;
+    let random_max = 100;
+    let random_val = [];
 
-    for (let i = 0; i < buttonCount; i++) {
-        randomValues.push(0);
+    for (let i = 0; i < button_cnt; i++) {
+        random_val.push(0);
     }
 
-    let remaining = maxRandom;
-    for (let i = 0; i < buttonCount - 1; i++) {
+    let remaining = random_max;
+    for (let i = 0; i < button_cnt - 1; i++) {
         let value = Math.floor(Math.random() * remaining);
-        randomValues[i] = value;
+        random_val[i] = value;
         remaining -= value;
     }
-    randomValues[buttonCount - 1] = remaining;
+    random_val[button_cnt - 1] = remaining;
 
     buttons.each(function(idx) {
-        $(this).html(`${$(this).text()}<span class="persent"> (${randomValues[idx]}%)</span>`);
+        $(this).html(`${$(this).text()}<span class="persent"> (${random_val[idx]}%)</span>`);
     });
 }); */
 
 
-/* $(document).ready(function() {
-    $(document).on('click', '.vote_option', function() {
-        let buttons = $('.vote_val_list button');
-        let buttonCount = buttons.length;
-        let maxRandom = 100;
-        let randomValues = [];
-        
+// $(document).ready(function() {
+//     $(document).on('click', '.vote_option', function() {
+//         const button = $(this);
+//         const buttons = $('.vote_val_list button');
+//         const button_cnt = buttons.length;
+//         const random_max = 100; // 퍼센트의 총합
+//         const random_val = [];
+
+//         // 퍼센트 값이 이미 있는 경우 클릭 비활성화
+//         if ($('.vote_val_list .persent').length && !button.hasClass('active')) {
+//             return; // 퍼센트 값이 이미 있으면 클릭 비활성화
+//         }
+
+//         // 클릭된 버튼이 active 상태이면 수정 가능
+//         if (button.hasClass('active')) {
+//             // 수정 버튼 보이기 및 퍼센트 값 초기화
+//             $('.vote_result_area .edit').show();
+//             $('.vote_val_list .persent').remove(); // 퍼센트 값 제거
+//             buttons.removeClass('active'); // 모든 버튼에서 active 클래스 제거
+//         } else {
+//             // 모든 버튼에서 active 클래스 제거
+//             buttons.removeClass('active');
+//             // 클릭된 버튼에만 active 클래스 추가
+//             button.addClass('active');
+//             $('.vote_result_area .edit').hide(); // 수정 버튼 숨기기
+
+//             // 랜덤 비율 생성 및 할당
+//             let remaining = random_max;
+//             for (let i = 0; i < button_cnt - 1; i++) {
+//                 // 난수를 생성하여 총합을 초과하지 않도록 처리
+//                 let value = Math.floor(Math.random() * (remaining + 1));
+//                 random_val.push(value);
+//                 remaining -= value;
+//             }
+//             // 마지막 버튼에 남은 값을 할당하여 총합이 정확히 100이 되도록 함
+//             random_val.push(remaining);
+
+//             // 퍼센트 값이 있는 버튼에 가장 높은 퍼센트 할당
+//             const max_percent = Math.max(...random_val);
+
+//             // 버튼에 퍼센트 값 추가
+//             buttons.each(function(idx) {
+//                 if ($(this).hasClass('active')) {
+//                     $(this).html(`${$(this).text()}<span class="persent"> (${max_percent}%)</span>`);
+//                 } else {
+//                     $(this).html(`${$(this).text()}<span class="persent"> (${random_val[idx] /* || 0 */}%)</span>`);
+//                 }
+//             });
+//         }
+//     });
+
+//     // 수정 버튼 클릭 시 상태 초기화
+//     $(document).on('click', '.vote_result_area .edit', function() {
+//         $('.vote_val_list button').removeClass('active'); // 모든 버튼에서 active 클래스 제거
+//         $('.vote_result_area .edit').hide(); // 수정 버튼 숨기기
+//         $('.vote_val_list .persent').remove(); // 퍼센트 값 제거
+//     });
+// });
+
+$(document).on('click', '.vote_option', function() {
+    const button = $(this);
+    const buttons = $('.vote_val_list button');
+    const button_cnt = buttons.length;
+    const random_max = 100;
+    let random_val = [];
+
+    if ($('.vote_val_list .persent').length && !button.hasClass('active')) {
+        return false;
+    }
+
+    if (button.hasClass('active')) {
         $('.vote_result_area .edit').show();
+        $('.vote_val_list .persent').remove();
+        buttons.removeClass('active');
+    } else {
+        buttons.removeClass('active');
+        button.addClass('active');
+        $('.vote_result_area .edit').hide();
 
-        if ($('.vote_val_list .persent').length) {
-            $('.vote_val_list .persent').remove();
-        } else {
-            for (let i = 0; i < buttonCount; i++) {
-                randomValues.push(0);
-            }
-
-            let remaining = maxRandom;
-            for (let i = 0; i < buttonCount - 1; i++) {
-                let value = Math.floor(Math.random() * remaining);
-                randomValues[i] = value;
-                remaining -= value;
-            }
-            randomValues[buttonCount - 1] = remaining;
-
-            buttons.each(function(idx) {
-                $(this).html(`${$(this).text()}<span class="persent"> (${randomValues[idx]}%)</span>`);
-            });
+        let remaining = random_max;
+        for (let i = 0; i < button_cnt - 1; i++) {
+            let value = Math.floor(Math.random() * (remaining - (button_cnt - i - 1)) + 1);
+            random_val.push(value);
+            remaining -= value;
         }
-    });
-}); */
+
+        random_val.push(remaining);
+
+        const max_percent = Math.max(...random_val);
+
+        let filteredValues = random_val.filter(value => value !== max_percent);
+        let newrandom_val = [];
+        let total = random_max - max_percent;
+
+        for (let i = 0; i < button_cnt - 1; i++) {
+            let value = Math.floor(Math.random() * (total - (button_cnt - i - 1)) + 1);
+            newrandom_val.push(value);
+            total -= value;
+        }
+
+        newrandom_val.push(total);
+
+        buttons.each(function(idx) {
+            if ($(this).hasClass('active')) {
+                $(this).html(`${$(this).text()}<span class="persent"> (${max_percent}%)</span>`);
+            } else {
+                $(this).html(`${$(this).text()}<span class="persent"> (${newrandom_val[idx] /* || 0 */}%)</span>`);
+            }
+        });
+    }
+});
+
+
+$(document).on('click', '.vote_result_area .edit', function() {
+    $('.vote_val_list button').removeClass('active'); 
+    $('.vote_result_area .edit').hide(); 
+    $('.vote_val_list .persent').remove();
+});
