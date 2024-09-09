@@ -1,4 +1,3 @@
-
 let vote_modal = `
     <div class="vote_contents_area_bg">
         <form id="vote_contents_area">
@@ -21,18 +20,16 @@ let vote_modal = `
             </div>
         </form>
     </div>
-`
+`;
 
 // 투표버튼 클릭
 $(document).on('click', '.vote_btn', function() {
-    // $('.vote_contents_create #editVote').attr('id', 'createVote')
-    // $('.vote_contents_create #createVote').text('투표 만들기')
     if ($('.vote_contents_area_bg').length == 0) {
         $('.vote_btn').after(vote_modal);
     } else {
         $('.vote_contents_area_bg').show();
     }
-    update();
+    vote_update();
 })
 
 // 투표모달창 닫기경우
@@ -45,17 +42,17 @@ $(document).on('click', '#addItem', function() {
     let vote_list = $(this).parent().siblings('.vote_list');
     let li_length = $(this).parent().siblings('.vote_list').children().length;
     vote_list.append(`<li><input type="text" placeholder="항목 입력" name="item_${++li_length}" required><span class="remove_item"><i class="fa-solid fa-xmark"></i></span></li>`)
-    update()
+    vote_update()
 })
 
 // 투표모달창 x버튼 눌렀을경우
 $(document).on('click', '.remove_item', function() {
     $(this).parent().remove();
-    update()
+    vote_update()
 })
 
 // 투표모달창 항목입력칸 [2칸 이하 x버튼 삭제], [3칸 이상일 경우 x버튼 생성]
-function update() {
+function vote_update() {
     let item_cnt = $('.vote_list li').length;
 
     $('.vote_list li').each(function(idx) {
@@ -78,21 +75,7 @@ function update() {
 
 // 투표모달창 투표만들기 눌렀을경우
 $(document).on('click', '#createVote', function() {
-    let title = $('.top_title .title').val()
-    let inp_val = ''
-    $('.vote_contents_create #createVote').text('투표 만들기')
-
-    $('.vote_list li input').each(function() {
-        inp_val = $(this).val()
-    })
-    
-    
-    if(title == '' || inp_val == '') {
-        alert('제목 또는 항목을 입력해야합니다.')
-    } else {
-        $('.vote_contents_area_bg').hide()
-        inputValue()
-    }
+    chk_inp()
 })
 
 // 모달창 값 반환하여 HTML에 출력
@@ -116,8 +99,6 @@ function inputValue() {
         $('.vote_result_area').remove();
         $('.btn_wrap').after(vote_design);
     }
-
-    
 }
 
 // create후 수정클릭하였을 경우
@@ -127,163 +108,80 @@ $(document).on('click', '.vote_result_area .top_tit .edit', function() {
     $('.vote_contents_create #createVote').attr('id', 'editVote')
 })
 
+//수정 버튼 클릭하였을 경우
 $(document).on('click', '#editVote', function() {
+    chk_inp()
+})
+
+function chk_inp() {
     let title = $('.top_title .title').val()
     let inp_val = ''
+    let flag = true;
 
     $('.vote_list li input').each(function() {
         inp_val = $(this).val()
+        if(inp_val == '') {return flag = false;}
     })
     
-    if(title == '' || inp_val == '') {
+    if(title == '' || flag == false) {
         alert('제목 또는 항목을 입력해야합니다.')
     } else {
         $('.vote_contents_area_bg').hide()
         inputValue()
     }
     $('.vote_contents_create #editVote').attr('id', 'createVote')
-})
+}
 
-
-/* $(document).on('click', '.vote_option', function() {
+// 버튼 퍼센트 계산식
+$(document).on('click', '.vote_option', function() {
+    let button = $(this);
     let buttons = $('.vote_val_list button');
     let button_cnt = buttons.length;
-    let random_max = 100;
-    let random_val = [];
 
-    for (let i = 0; i < button_cnt; i++) {
-        random_val.push(0);
-    }
-
-    let remaining = random_max;
-    for (let i = 0; i < button_cnt - 1; i++) {
-        let value = Math.floor(Math.random() * remaining);
-        random_val[i] = value;
-        remaining -= value;
-    }
-    random_val[button_cnt - 1] = remaining;
-
-    buttons.each(function(idx) {
-        $(this).html(`${$(this).text()}<span class="persent"> (${random_val[idx]}%)</span>`);
-    });
-}); */
-
-
-// $(document).ready(function() {
-//     $(document).on('click', '.vote_option', function() {
-//         const button = $(this);
-//         const buttons = $('.vote_val_list button');
-//         const button_cnt = buttons.length;
-//         const random_max = 100; // 퍼센트의 총합
-//         const random_val = [];
-
-//         // 퍼센트 값이 이미 있는 경우 클릭 비활성화
-//         if ($('.vote_val_list .persent').length && !button.hasClass('active')) {
-//             return; // 퍼센트 값이 이미 있으면 클릭 비활성화
-//         }
-
-//         // 클릭된 버튼이 active 상태이면 수정 가능
-//         if (button.hasClass('active')) {
-//             // 수정 버튼 보이기 및 퍼센트 값 초기화
-//             $('.vote_result_area .edit').show();
-//             $('.vote_val_list .persent').remove(); // 퍼센트 값 제거
-//             buttons.removeClass('active'); // 모든 버튼에서 active 클래스 제거
-//         } else {
-//             // 모든 버튼에서 active 클래스 제거
-//             buttons.removeClass('active');
-//             // 클릭된 버튼에만 active 클래스 추가
-//             button.addClass('active');
-//             $('.vote_result_area .edit').hide(); // 수정 버튼 숨기기
-
-//             // 랜덤 비율 생성 및 할당
-//             let remaining = random_max;
-//             for (let i = 0; i < button_cnt - 1; i++) {
-//                 // 난수를 생성하여 총합을 초과하지 않도록 처리
-//                 let value = Math.floor(Math.random() * (remaining + 1));
-//                 random_val.push(value);
-//                 remaining -= value;
-//             }
-//             // 마지막 버튼에 남은 값을 할당하여 총합이 정확히 100이 되도록 함
-//             random_val.push(remaining);
-
-//             // 퍼센트 값이 있는 버튼에 가장 높은 퍼센트 할당
-//             const max_percent = Math.max(...random_val);
-
-//             // 버튼에 퍼센트 값 추가
-//             buttons.each(function(idx) {
-//                 if ($(this).hasClass('active')) {
-//                     $(this).html(`${$(this).text()}<span class="persent"> (${max_percent}%)</span>`);
-//                 } else {
-//                     $(this).html(`${$(this).text()}<span class="persent"> (${random_val[idx] /* || 0 */}%)</span>`);
-//                 }
-//             });
-//         }
-//     });
-
-//     // 수정 버튼 클릭 시 상태 초기화
-//     $(document).on('click', '.vote_result_area .edit', function() {
-//         $('.vote_val_list button').removeClass('active'); // 모든 버튼에서 active 클래스 제거
-//         $('.vote_result_area .edit').hide(); // 수정 버튼 숨기기
-//         $('.vote_val_list .persent').remove(); // 퍼센트 값 제거
-//     });
-// });
-
-$(document).on('click', '.vote_option', function() {
-    const button = $(this);
-    const buttons = $('.vote_val_list button');
-    const button_cnt = buttons.length;
-    const random_max = 100;
-    let random_val = [];
-
-    if ($('.vote_val_list .persent').length && !button.hasClass('active')) {
+    if ($('.vote_val_list .percent').length && !button.hasClass('active')) {
         return false;
     }
 
     if (button.hasClass('active')) {
+        buttons.find('span').css("color", "#000");
         $('.vote_result_area .edit').show();
-        $('.vote_val_list .persent').remove();
+        $('.vote_val_list .percent').remove();
+        $('.vote_fill').css("transform", "0");
+        $('.vote_fill').width(0);
         buttons.removeClass('active');
     } else {
         buttons.removeClass('active');
         button.addClass('active');
         $('.vote_result_area .edit').hide();
 
-        let remaining = random_max;
+        const random_arr = [];
+        let sum = 0;
+        // 난수 생성 및 합계 계산
         for (let i = 0; i < button_cnt - 1; i++) {
-            let value = Math.floor(Math.random() * (remaining - (button_cnt - i - 1)) + 1);
-            random_val.push(value);
-            remaining -= value;
+            const randomNum = Math.floor(Math.random() * (100 - sum - (button_cnt - i - 1)));
+            random_arr.push(randomNum);
+            sum += randomNum;
         }
 
-        random_val.push(remaining);
-
-        const max_percent = Math.max(...random_val);
-
-        let filteredValues = random_val.filter(value => value !== max_percent);
-        let newrandom_val = [];
-        let total = random_max - max_percent;
-
-        for (let i = 0; i < button_cnt - 1; i++) {
-            let value = Math.floor(Math.random() * (total - (button_cnt - i - 1)) + 1);
-            newrandom_val.push(value);
-            total -= value;
-        }
-
-        newrandom_val.push(total);
+        // 마지막 요소는 100에서 현재 합계를 뺀 값으로 설정
+        random_arr.push(100 - sum);
+        
+        let max_val = Math.max.apply(Math, random_arr);
+        let remain = random_arr.filter((element) => element !== max_val);
 
         buttons.each(function(idx) {
             if ($(this).hasClass('active')) {
-                $(this).html(`${$(this).text()}<span class="persent"> (${max_percent}%)</span>`);
+                $(this).html(`<span>${$(this).text()}</span><span class="percent"> (${max_val}%)</span><span class="vote_fill"></span>`);
+                $(this).find('.vote_fill').width(`${max_val}%`);
+                $(this).find('.vote_fill').css("transform", "none");
+                $(this).find('span').css("color", "red");
             } else {
-                $(this).html(`${$(this).text()}<span class="persent"> (${newrandom_val[idx] /* || 0 */}%)</span>`);
+                $(this).html(`<span>${$(this).text()}</span><span class="percent"> (${remain[0]}%)</span><span class="vote_fill"></span>`);
+                $(this).find('.vote_fill').width(`${remain[0]}%`);
+                $(this).find('.vote_fill').css("transform", "none");
+                $(this).find('span').css("color", "red");
+                remain.shift();
             }
         });
     }
-});
-
-
-$(document).on('click', '.vote_result_area .edit', function() {
-    $('.vote_val_list button').removeClass('active'); 
-    $('.vote_result_area .edit').hide(); 
-    $('.vote_val_list .persent').remove();
 });
